@@ -1,0 +1,39 @@
+library(tidyverse)
+library(ggplot2)
+library(ggchicklet)
+library(prismatic)
+library(ggtext)
+library(reshape2)
+library(ggsci)
+
+pcoa_season <- read.delim(file="分布图.txt",check.names=FALSE,sep="\t")
+
+table(pcoa_season$TYPE)
+
+pcoa_season$TYPE<-factor(pcoa_season$TYPE,
+                                 levels=c("1000q7nospike","1000q7spike70","allpassnospike",
+                                          "allpasssike70"))
+
+
+
+
+
+color15_map_4<- c("#ed05c2","#ffd104","#eb583f",
+                  "#7e0094", "#07020a", "#de0204",
+                  "#0074a3", "#999999","#f598c8",
+                  "#1037a3" , "#e87a00","#544866")
+library(plotly)
+#install.packages("plotly")
+library(RColorBrewer)
+p_3d <- plot_ly(pcoa_season, 
+                x = ~A, y = ~B, z = ~C, 
+                color = ~TYPE,
+                text = ~Sample) %>%
+  add_markers(colors=color15_map_4) %>%
+  layout(scene = list(xaxis = list(title = 'A'),
+                      yaxis = list(title = 'B'),
+                      zaxis = list(title = 'C')))
+p_3d
+htmlwidgets::saveWidget(as_widget(p_3d), "1gene.pcoa.bray.curtis.3d.20220328.html")
+
+

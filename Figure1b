@@ -1,0 +1,104 @@
+meta<-read.delim(file="meta-data年份.txt",sep="\t", check.names=FALSE,header=T,quote='"')
+abun2<-read.delim(file="pcoa年份stincellnumber.gene.txt", check.names=FALSE, row.names=1,header=T,sep="\t")
+abun2[is.na(abun2)]<- 0
+nrow(meta)
+length(abun2)
+meta[1:2,1:2]
+abun2[1:2,1:2]
+meta[which(!meta$Size %in% colnames(abun2)),]
+library(ggplot2)
+library(vegan)
+library(BiodiversityR)
+#install.packages("BiodiversityR")
+library(scales)
+#abun<-abun[,-1]
+abun2<-data.frame(t(abun2))
+tmp<-abun2[1:5,1:5]
+tmp
+nrow(abun2)
+abun2<-abun2[rowSums(abun2)!=0,]
+nrow(abun2) 
+ncol(abun2) 
+dist_gene.cell<-vegdist(abun2,method="bray") #Bray-Curtis distance calculation 
+cmdscale_gene.cell<-cmdscale(dist_gene.cell, k=(nrow(abun2)-1),
+                             eig=T, add=F) #PCoA calculation
+nrow(cmdscale_gene.cell[[1]]);ncol(cmdscale_gene.cell[[1]]) 
+cmdscale_gene.cell<- add.spec.scores(cmdscale_gene.cell,abun2,
+                                     method="pcoa.scores", Rscale=T, 
+                                     scaling=1, multi=1) #Calculate scores (coordinates) for ARG-MRG types
+nrow(cmdscale_gene.cell[[1]]);ncol(cmdscale_gene.cell[[1]]) # 1476; 965
+
+tmp1<-paste("PC1 (",round(cmdscale_gene.cell[[6]][1],2),"%)",sep="") 
+tmp2<-paste("PC2 (",round(cmdscale_gene.cell[[6]][2],2),"%)",sep="") 
+tmp3<-paste("PC3 (",round(cmdscale_gene.cell[[6]][3],2),"%)",sep="") 
+write.table(dist_gene.cell,'all_3.0yxllsx+all_2.3dist_gene_cell.txt',row.names =F, col.names =T, quote =T,sep="\t")
+
+
+############################# PCoA statistical analyses (Bray-curtis) #############################
+#### prepare for plotting
+pcoa_gene.cell<-as.data.frame(cmdscale_gene.cell[[1]][,1:3]) #extract data frame for PCoA plotting
+colnames(pcoa_gene.cell)<-c("PC1","PC2","PC3")
+pcoa_gene.cell$Sample<-rownames(pcoa_gene.cell)
+write.table(pcoa_gene.cell,'pcoa_gene.cell.txt',row.names =F, col.names =T, quote =T,sep="\t")
+pcoa_gene.cell<-read.delim(file="pcoa_gene.cell.txt",sep="\t",header=T,quote='"')
+pcoa_season<-merge(pcoa_gene.cell,meta,by.x="Sample",by.y="datafile_name",all.x=T) #get season information of sample
+
+table(pcoa_season$eco_type_big)
+
+
+
+pcoa_season$eco_type_big<-factor(pcoa_season$eco_type_big,
+                                 levels=c("2010","2011","2012",
+                                          "2013","2014","2015",
+                                          "2016","2017","2018",
+                                          "2019","2020","2021",
+                                          "2022"))
+
+
+color15_map_4<- c("#ed05c2","#ffd104","#eb583f",
+                  "#7e0094", "#07020a", "#de0204",
+                  "#0074a3", "#999999","#f598c8",
+                  "#1037a3" , "#e87a00","#544866",
+                  "#00a637")
+#for ½øË®2£¬3ºÍ3.0¶Ô±È
+#pcoa_season$eco_type_big<-factor(pcoa_season$eco_type_big, levels=c("Influent_3.0","Influent"))
+#color15_map_4<- c("#ed05c2","#ffd104")
+#===================================
+# 3d
+#===================================
+pcoa_gene.cell<-as.data.frame(cmdscale_gene.cell[[1]][,1:3]) #extract data frame for PCoA plotting
+colnames(pcoa_gene.cell)<-c("PC1","PC2","PC3")
+pcoa_gene.cell$Sample<-rownames(pcoa_gene.cell)
+write.table(pcoa_gene.cell,'pcoa_gene.cell.txt',row.names =F, col.names =T, quote =T,sep="\t")
+pcoa_gene.cell<-read.delim(file="pcoa_gene.cell.txt",sep="\t",header=T,quote='"')
+pcoa_season<-merge(pcoa_gene.cell,meta,by.x="Sample",by.y="datafile_name",all.x=T) #get season information of sample
+
+table(pcoa_season$eco_note)
+
+pcoa_season$eco_note<-factor(pcoa_season$eco_note,
+                                 levels=c("January","February","March","April","May",
+                                          "June","July","August","September",
+                                          "October","November","December"
+                                 ))
+
+
+color15_map_4<- c("#ed05c2","#ffd104","#eb583f",
+                  "#7e0094", "#07020a", "#de0204",
+                  "#0074a3", "#999999","#f598c8",
+                  "#1037a3" , "#e87a00","#544866")
+library(plotly)
+#install.packages("plotly")
+library(RColorBrewer)
+t <- list(family = "sans serif",size = 10,color = toRGB("black"))
+p_3d <- plot_ly(pcoa_season, 
+                x = ~PC1, y = ~PC2, z = ~PC3, 
+                color = ~eco_note,
+                text = ~Sample) %>%
+  #add_text(textfont = t) %>%
+  add_markers(colors=color15_map_4) %>%
+  layout(scene = list(xaxis = list(title = tmp1),
+                      yaxis = list(title = tmp2),
+                      zaxis = list(title = tmp3)))
+p_3d
+htmlwidgets::saveWidget(as_widget(p_3d), "gene.pcoa.bray.curtis.3d.20220328.html")
+

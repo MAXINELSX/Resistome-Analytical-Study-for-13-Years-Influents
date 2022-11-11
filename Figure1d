@@ -1,0 +1,239 @@
+useMockData = F
+
+# > install packages if required
+#install.packages(c("ggplot2","iNEXT","coin","vegan","pheatmap"))
+
+# > load helper functions and libraries
+# ===========================
+library(ggplot2)
+source('R_Microbiome_scripts.R')
+source('R_Misc.R')
+
+# LOAD DATA
+# ===========================================
+# if using mock data (default behavior)
+
+mockS = 'MockData_'
+nrBoots = 1
+rcurves <- NULL
+inCs <- read.delim(file="beta_lactamcellnumber.subtype.txt",check.names=FALSE,sep="\t")
+inCs[is.na(inCs)] <- 0
+inCs$Cohort <- "DAG3"
+print (' >> RAREFING beta_lactam')
+rcurveC <- doRarefaction(inDF = inCs,replacements = F,bootstraps = nrBoots,extrapolate=F,doAll=F,doTaxa =F)
+rcurveC$Taxon <- "beta_lactam"
+rcurves <- rbind.data.frame(rcurves,rcurveC)
+
+inPWYs <-read.delim(file="aminoglycosidecellnumber.subtype.txt",check.names=FALSE,sep="\t")
+inPWYs[is.na(inPWYs)] <- 0
+inPWYsCoh <- inPWYs
+inPWYsCoh$Cohort <- "DAG3"
+print (' >> RAREFING PWYS')
+rcurveP <- doRarefaction(inDF = inPWYsCoh,replacements = F,bootstraps = nrBoots,extrapolate=F,doAll=F,doTaxa = F)
+rcurveP$Taxon <- "aminoglycoside"
+rcurves <- rbind.data.frame(rcurves,rcurveP)
+
+inchloramphenicol <-read.delim(file="chloramphenicolcellnumber.subtype.txt",check.names=FALSE,sep="\t")
+inchloramphenicol[is.na(inchloramphenicol)] <- 0
+inchloramphenicol$Cohort <- "DAG3"
+print (' >> RAREFING chloramphenicol')
+rcurveV <- doRarefaction(inDF = inchloramphenicol,replacements = F,bootstraps = nrBoots,extrapolate=F,doAll=F,doTaxa = F)
+rcurveV$Taxon <- "chloramphenicol"
+rcurves <- rbind.data.frame(rcurves,rcurveV)
+
+
+inb <-read.delim(file="bacitracincellnumber.subtype.txt",check.names=FALSE,sep="\t")
+inb[is.na(inb)] <- 0
+inbCoh <- inb
+inbCoh$Cohort <- "DAG3"
+print (' >> RAREFING PWYS')
+rcurveb <- doRarefaction(inDF = inbCoh,replacements = F,bootstraps = nrBoots,extrapolate=F,doAll=F,doTaxa = F)
+rcurveb$Taxon <- "bacitracin"
+rcurves <- rbind.data.frame(rcurves,rcurveb)
+
+indn <-read.delim(file="defensin.subtype.txt",check.names=FALSE,sep="\t")
+indn[is.na(indn)] <- 0
+indnCoh <- indn
+indnCoh$Cohort <- "DAG3"
+print (' >> RAREFING PWYS')
+rcurvedn <- doRarefaction(inDF = indnCoh,replacements = F,bootstraps = nrBoots,extrapolate=F,doAll=F,doTaxa = F)
+rcurvedn$Taxon <- "defensin"
+rcurves <- rbind.data.frame(rcurves,rcurvedn)
+
+infl <-read.delim(file="florfenicol.subtype.txt",check.names=FALSE,sep="\t")
+infl [is.na(infl)] <- 0
+inflCoh <- infl
+inflCoh$Cohort <- "DAG3"
+print (' >> RAREFING PWYS')
+rcurveinfl <- doRarefaction(inDF = inflCoh,replacements = F,bootstraps = nrBoots,extrapolate=F,doAll=F,doTaxa = F)
+rcurveinfl$Taxon <- "florfenicol"
+rcurves <- rbind.data.frame(rcurves,rcurveinfl)
+
+
+info <-read.delim(file="fosfomycin.subtype.txt",check.names=FALSE,sep="\t")
+info [is.na(info)] <- 0
+infoCoh <- info
+infoCoh$Cohort <- "DAG3"
+print (' >> RAREFING PWYS')
+rcurveinfo <- doRarefaction(inDF = infoCoh,replacements = F,bootstraps = nrBoots,extrapolate=F,doAll=F,doTaxa = F)
+rcurveinfo$Taxon <- "fosfomycin"
+rcurves <- rbind.data.frame(rcurves,rcurveinfl)
+
+
+infu <-read.delim(file="fusidic_acid.subtype.txt",check.names=FALSE,sep="\t")
+infu[is.na(infu)] <- 0
+infuCoh <- infu
+infuCoh$Cohort <- "DAG3"
+print (' >> RAREFING PWYS')
+rcurveinfu <- doRarefaction(inDF = infuCoh,replacements = F,bootstraps = nrBoots,extrapolate=F,doAll=F,doTaxa = F)
+rcurveinfu$Taxon <- "fusidic_acid"
+rcurves <- rbind.data.frame(rcurves,rcurveinfu)
+
+inml <-read.delim(file="mlscellnumber.subtype.txt",check.names=FALSE,sep="\t")
+inml[is.na(inml)] <- 0
+inmlCoh <- inml
+inmlCoh$Cohort <- "DAG3"
+print (' >> RAREFING PWYS')
+rcurveinml <- doRarefaction(inDF = inmlCoh,replacements = F,bootstraps = nrBoots,extrapolate=F,doAll=F,doTaxa = F)
+rcurveinml$Taxon <- "macrolide-lincosamide"
+rcurves <- rbind.data.frame(rcurves,rcurveinml)
+
+
+inmul <-read.delim(file="multidrugcellnumber.subtype.txt",check.names=FALSE,sep="\t")
+inmul[is.na(inmul)] <- 0
+inmulCoh <-inmul
+inmulCoh$Cohort <- "DAG3"
+print (' >> RAREFING PWYS')
+rcurveinmul <- doRarefaction(inDF =inmulCoh,replacements = F,bootstraps = nrBoots,extrapolate=F,doAll=F,doTaxa = F)
+rcurveinmul$Taxon <- "multidrug"
+rcurves <- rbind.data.frame(rcurves,rcurveinmul)
+
+inmup <-read.delim(file="mupirocincellnumber.subtype.txt",check.names=FALSE,sep="\t")
+inmup[is.na(inmup)] <- 0
+inmupCoh <-inmup
+inmupCoh$Cohort <- "DAG3"
+print (' >> RAREFING PWYS')
+rcurveinmup<- doRarefaction(inDF =inmupCoh,replacements = F,bootstraps = nrBoots,extrapolate=F,doAll=F,doTaxa = F)
+rcurveinmup$Taxon <- "mupirocin"
+rcurves <- rbind.data.frame(rcurves,rcurveinmup)
+
+inoth <-read.delim(file="other_peptide_antibioticscellnumber.subtype.txt",check.names=FALSE,sep="\t")
+inoth[is.na(inoth)] <- 0
+inothCoh <-inoth
+inothCoh$Cohort <- "DAG3"
+print (' >> RAREFING PWYS')
+rcurveinoth<- doRarefaction(inDF =inothCoh,replacements = F,bootstraps = nrBoots,extrapolate=F,doAll=F,doTaxa = F)
+rcurveinoth$Taxon <- "other_peptide_antibiotics"
+rcurves <- rbind.data.frame(rcurves,rcurveinoth)
+
+inpoly <-read.delim(file="polymyxincellnumber.subtype.txt",check.names=FALSE,sep="\t")
+inpoly[is.na(inpoly)] <- 0
+inpolyCoh <-inpoly
+inpolyCoh$Cohort <- "DAG3"
+print (' >> RAREFING PWYS')
+rcurveinpoly<- doRarefaction(inDF =inpolyCoh,replacements = F,bootstraps = nrBoots,extrapolate=F,doAll=F,doTaxa = F)
+rcurveinpoly$Taxon <- "polymyxin"
+rcurves <- rbind.data.frame(rcurves,rcurveinpoly)
+
+inqui <-read.delim(file="quinolonecellnumber.subtype.txt",check.names=FALSE,sep="\t")
+inqui[is.na(inqui)] <- 0
+inquiCoh <-inqui
+inquiCoh$Cohort <- "DAG3"
+print (' >> RAREFING PWYS')
+rcurveinqui<- doRarefaction(inDF =inquiCoh,replacements = F,bootstraps = nrBoots,extrapolate=F,doAll=F,doTaxa = F)
+rcurveinqui$Taxon <- "quinolone"
+rcurves <- rbind.data.frame(rcurves,rcurveinqui)
+
+inri <-read.delim(file="rifamycincellnumber.subtype.txt",check.names=FALSE,sep="\t")
+inri[is.na(inri)] <- 0
+inriCoh <-inri
+inriCoh$Cohort <- "DAG3"
+print (' >> RAREFING PWYS')
+rcurveinri<- doRarefaction(inDF =inriCoh,replacements = F,bootstraps = nrBoots,extrapolate=F,doAll=F,doTaxa = F)
+rcurveinri$Taxon <- "rifamycin"
+rcurves <- rbind.data.frame(rcurves,rcurveinri)
+
+instr <-read.delim(file="streptothricincellnumber.subtype.txt",check.names=FALSE,sep="\t")
+instr[is.na(instr)] <- 0
+instrCoh <-instr
+instrCoh$Cohort <- "DAG3"
+print (' >> RAREFING PWYS')
+rcurveinstr<- doRarefaction(inDF =instrCoh,replacements = F,bootstraps = nrBoots,extrapolate=F,doAll=F,doTaxa = F)
+rcurveinstr$Taxon <- "streptothricin"
+rcurves <- rbind.data.frame(rcurves,rcurveinstr)
+
+insul <-read.delim(file="sulfonamidecellnumber.subtype.txt",check.names=FALSE,sep="\t")
+insul[is.na(insul)] <- 0
+insulCoh <-insul
+insulCoh$Cohort <- "DAG3"
+print (' >> RAREFING PWYS')
+rcurveinsul<- doRarefaction(inDF =insulCoh,replacements = F,bootstraps = nrBoots,extrapolate=F,doAll=F,doTaxa = F)
+rcurveinsul$Taxon <- "sulfonamide"
+rcurves <- rbind.data.frame(rcurves,rcurveinsul)
+
+intet <-read.delim(file="tetracyclinecellnumber.subtype.txt",check.names=FALSE,sep="\t")
+intet[is.na(intet)] <- 0
+intetCoh <-intet
+intetCoh$Cohort <- "DAG3"
+print (' >> RAREFING PWYS')
+rcurveintet<- doRarefaction(inDF =intetCoh,replacements = F,bootstraps = nrBoots,extrapolate=F,doAll=F,doTaxa = F)
+rcurveintet$Taxon <- "tetracycline"
+rcurves <- rbind.data.frame(rcurves,rcurveintet)
+
+intrim <-read.delim(file="trimethoprimcellnumber.subtype.txt",check.names=FALSE,sep="\t")
+intrim[is.na(intrim)] <- 0
+intrimCoh <-intrim
+intrimCoh$Cohort <- "DAG3"
+print (' >> RAREFING PWYS')
+rcurveintrim<- doRarefaction(inDF =intrimCoh,replacements = F,bootstraps = nrBoots,extrapolate=F,doAll=F,doTaxa = F)
+rcurveintrim$Taxon <- "trimethoprim"
+rcurves <- rbind.data.frame(rcurves,rcurveintrim)
+
+inva <-read.delim(file="vancomycincellnumber.subtype.txt",check.names=FALSE,sep="\t")
+inva[is.na(inva)] <- 0
+invaCoh <-inva
+invaCoh$Cohort <- "DAG3"
+print (' >> RAREFING PWYS')
+rcurveinva<- doRarefaction(inDF =invaCoh,replacements = F,bootstraps = nrBoots,extrapolate=F,doAll=F,doTaxa = F)
+rcurveinva$Taxon <- "vancomycin"
+rcurves <- rbind.data.frame(rcurves,rcurveinva)
+
+# extra annotation for plots
+rcurves$linetype = "dashed"
+rcurves$Taxon
+rcurves$linetype[rcurves$Taxon %in% c('beta_lactam','aminoglycoside',
+                                      'chloramphenicol','bacitracin',
+                                      'defensin','florfenicol',
+                                      'fosfomycin','fusidic_acid',
+                                      'macrolide-lincosamide',
+                                      'multidrug','mupirocin',
+                                      'other_peptide_antibiotics','polymyxin',
+                                      'quinolone','rifamycin','streptothricin',
+                                      'sulfonamide','tetracycline','trimethoprim','vancomycin')] = "dashed"
+cbPalette <- c("#B84D64", "#864A68", "#EE7072", "#E32D32", "#998B95", 
+               "#5E549A", "#8952A0", "#4552A0","#384B97", "#2B3B72", 
+               "#911310","#384C99", "#9B8E8C","#7CA878", "#35A132",
+               "#6B70B0", "#3D6AAA", "#394D9B","#75ACC3", "#20ACBD",
+               "#38509F", "#959897","#F4A2A3","#F69896", "#B6CCD7", 
+               "#AF98B5", "#E01516","#cff016")
+rcurves$Taxon <- factor(rcurves$Taxon,levels=c("beta_lactam","aminoglycoside","chloramphenicol","bacitracin","defensin","florfenicol","fosfomycin","fusidic_acid","macrolide-lincosamide","multidrug","mupirocin","other_peptide_antibiotics","polymyxin","quinolone","rifamycin","streptothricin","sulfonamide","tetracycline","trimethoprim","vancomycin"))
+
+# save plot data table
+# ======================
+write.table(rcurves,paste0('microbiome_description/plots/',mockS,'Fig_1B_microbiome_rarefaction_datatable.csv'),sep=',',row.names = F)
+
+# draw the plot
+# ===================
+rcurves <- read.csv(file ='microbiome_description/plots/MockData_Fig_1B_microbiome_rarefaction_datatable100.csv',sep=',',header = T)
+g <- ggplot(rcurves,aes(x=nr,y=spec.nr.mn,col=Taxon)) + geom_line(size=1,linetype=rcurves$linetype) + 
+  geom_errorbar(aes(ymin=spec.nr.mn-spec.nr.sd, ymax=spec.nr.mn+spec.nr.sd),size=1, colour="black") + geom_point(shape=1,size=1,fill="white") + theme_bw() + 
+  xlab("Number of samples") + ylab("Number of Subtypes") + theme(legend.position="right") + 
+  theme(text = element_text(size = 14)) + scale_color_manual(values = cbPalette)
+print(g)
+ggsave(plot = g,filename = paste0('microbiome_description/plots/',mockS,'100.png'),width = 6.5*1.2*1.2,height = 6*0.8*1.2)
+g1 <- ggplot(rcurves,aes(x=nr,y=spec.nr.mn,col=Taxon)) + geom_line(size=1.25,linetype=rcurves$linetype) + 
+ geom_point(shape=1,size=1.75,fill="white") + theme_bw() + 
+  xlab("Number of samples") + ylab("Number of features") + theme(legend.position="right") + 
+  theme(text = element_text(size = 17)) + scale_color_manual(values = cbPalette)
+print(g1)
+

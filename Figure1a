@@ -1,0 +1,57 @@
+library(tidyverse)
+library(ggplot2)
+library(ggchicklet)
+library(prismatic)
+library(ggtext)
+library(reshape2)
+library(ggsci)
+
+df <- read.delim(file="stincellnumber.type_补全时间_删除重复值_10-15.txt",check.names=FALSE,sep="\t")
+title= "Temporal variability of ARG types in Shatin influent (IN) in 2010-2015"
+df[is.na(df)] <- 0
+df <- melt(df)
+df[df==0] <- NA
+
+colnames(df) = c('ARG_Type','Time','Copies_per_cell')
+table(df$ARG_Type)
+df$Row.names<-factor(df$ARG_Type,
+                     levels=c("aminoglycoside","antibacterial_fatty_acid","bacitracin","beta_lactam","bicyclomycin",
+                              "bleomycin","chloramphenicol","defensin","florfenicol","fosfomycin",
+                              "fusidic_acid","MLS","multidrug","mupirocin","novobiocin",
+                              "other_peptide_antibiotics","pleuromutilin_tiamulin","polymyxin","puromycin","quinolone",
+                              "rifamycin","streptothricin","sulfonamide","tetracenomycin_C","tetracycline",
+                              "trimethoprim","tunicamycin","vancomycin"))
+color15_map_4<- c("#B84D64", "#864A68", "#EE7072", "#E32D32", "#998B95", 
+                  "#5E549A", "#8952A0", "#4552A0","#384B97", "#2B3B72", 
+                  "#911310","#384C99", "#9B8E8C","#7CA878", "#35A132",
+                  "#6B70B0", "#3D6AAA", "#394D9B","#75ACC3", "#20ACBD",
+                  "#38509F", "#959897","#F4A2A3","#F69896", "#B6CCD7", 
+                  "#AF98B5", "#E01516","#cff016")
+names(color15_map_4) <- c("aminoglycoside","antibacterial_fatty_acid","bacitracin","beta_lactam","bicyclomycin",
+                          "bleomycin","chloramphenicol","defensin","florfenicol","fosfomycin",
+                          "fusidic_acid","MLS","multidrug","mupirocin","novobiocin",
+                          "other_peptide_antibiotics","pleuromutilin_tiamulin","polymyxin","puromycin","quinolone",
+                          "rifamycin","streptothricin","sulfonamide","tetracenomycin_C","tetracycline",
+                          "trimethoprim","tunicamycin","vancomycin")
+color15_map_4
+P <- ggplot(df, aes(x =Time, y =Copies_per_cell, fill = ARG_Type)) + geom_col(width = 0.7)+
+  scale_fill_manual(values=color15_map_4[df$ARG_Type])  +
+  labs(
+    title = title,
+    x = "Time",
+    y = "Copy of ARG per cell"
+  ) +
+  theme_minimal(base_size=9, base_family="Times") +
+  theme(
+    plot.title = element_markdown(face = 'bold', size = 15, hjust = 0),
+    plot.margin = margin(10, 15, 10, 10),
+    axis.text = element_text(color = "gray10"),
+    axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
+    axis.text.x = element_text(angle = 45,vjust = 0.85,hjust = 0.75),
+    legend.position = "top",
+    legend.title = element_blank(),
+    legend.text = element_text(size = 4)
+  ) +
+  guides(fill=guide_legend(nrow = 3, byrow = FALSE, reverse = TRUE))
+P
+ggsave("10-15.png",P,width = 12,height = 9)
